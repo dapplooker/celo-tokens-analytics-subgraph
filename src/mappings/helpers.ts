@@ -155,5 +155,4 @@ export function createUser(address: Address, token: string): void {
     user.tokens = user.tokens;
     user.save();
   }
-
 }
