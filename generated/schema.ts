@@ -96,13 +96,13 @@ export class Token extends Entity {
     this.set("totalSupply", Value.fromBigInt(value));
   }
 
-  get tradeVolume(): BigDecimal {
-    let value = this.get("tradeVolume");
+  get totalVolume(): BigDecimal {
+    let value = this.get("totalVolume");
     return value.toBigDecimal();
   }
 
-  set tradeVolume(value: BigDecimal) {
-    this.set("tradeVolume", Value.fromBigDecimal(value));
+  set totalVolume(value: BigDecimal) {
+    this.set("totalVolume", Value.fromBigDecimal(value));
   }
 
   get txCount(): BigInt {
@@ -112,15 +112,6 @@ export class Token extends Entity {
 
   set txCount(value: BigInt) {
     this.set("txCount", Value.fromBigInt(value));
-  }
-
-  get tokenDayData(): Array<string> {
-    let value = this.get("tokenDayData");
-    return value.toStringArray();
-  }
-
-  set tokenDayData(value: Array<string>) {
-    this.set("tokenDayData", Value.fromStringArray(value));
   }
 }
 

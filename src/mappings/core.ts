@@ -30,7 +30,7 @@ export function handleTransfer(event: ethereum.Event): void {
     token.totalSupply = fetchTokenTotalSupply(tokenAddress);
     let decimals = fetchTokenDecimals(tokenAddress);
     token.decimals = decimals;
-    token.tradeVolume = ZERO_BD;
+    token.totalVolume = ZERO_BD;
     token.txCount = ZERO_BI;
     token.gasConsumed = ZERO_BD;
     token.lastUpdatedTimestamp = event.block.timestamp.toI32();
@@ -43,7 +43,7 @@ export function handleTransfer(event: ethereum.Event): void {
   let tokenDayData = updateTokenDayData(token as Token, event);
 
   tokenDayData.dailyVolumeToken = tokenDayData.dailyVolumeToken.plus(event.parameters[2].value.toBigInt().toBigDecimal());
-  token.tradeVolume = token.tradeVolume.plus(event.parameters[2].value.toBigInt().toBigDecimal());
+  token.totalVolume = token.totalVolume.plus(event.parameters[2].value.toBigInt().toBigDecimal());
   // log.info
   let gasConsumed= event.transaction.gasUsed.times(event.transaction.gasPrice).toBigDecimal();
 

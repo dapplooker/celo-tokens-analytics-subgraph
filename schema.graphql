@@ -13,13 +13,11 @@ type Token @entity {
   totalSupply: BigInt!
 
   # token specific volume
-  tradeVolume: BigDecimal!
+  totalVolume: BigDecimal!
 
   # transactions across all pairs
   txCount: BigInt!
 
-  # derived fields
-  tokenDayData: [TokenDayData!]! @derivedFrom(field: "token")
 }
 
 
