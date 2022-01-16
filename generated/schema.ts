@@ -69,13 +69,13 @@ export class Token extends Entity {
     this.set("decimals", Value.fromBigInt(value));
   }
 
-  get lastUpdatedTimestamp(): i32 {
-    let value = this.get("lastUpdatedTimestamp");
+  get blockTimestamp(): i32 {
+    let value = this.get("blockTimestamp");
     return value.toI32();
   }
 
-  set lastUpdatedTimestamp(value: i32) {
-    this.set("lastUpdatedTimestamp", Value.fromI32(value));
+  set blockTimestamp(value: i32) {
+    this.set("blockTimestamp", Value.fromI32(value));
   }
 
   get gasConsumed(): BigDecimal {
@@ -189,6 +189,15 @@ export class TokenDayData extends Entity {
   set dailyTxns(value: BigInt) {
     this.set("dailyTxns", Value.fromBigInt(value));
   }
+
+  get blockTimestamp(): i32 {
+    let value = this.get("blockTimestamp");
+    return value.toI32();
+  }
+
+  set blockTimestamp(value: i32) {
+    this.set("blockTimestamp", Value.fromI32(value));
+  }
 }
 
 export class User extends Entity {
@@ -221,12 +230,21 @@ export class User extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get tokens(): Array<string> {
+  get tokens(): string {
     let value = this.get("tokens");
     return value.toStringArray();
   }
 
-  set tokens(value: Array<string>) {
+  set tokens(value: string) {
     this.set("tokens", Value.fromStringArray(value));
+  }
+
+  get blockTimestamp(): i32 {
+    let value = this.get("blockTimestamp");
+    return value.toI32();
+  }
+
+  set blockTimestamp(value: i32) {
+    this.set("blockTimestamp", Value.fromI32(value));
   }
 }
