@@ -6,7 +6,7 @@ type Token @entity {
   symbol: String!
   name: String!
   decimals: BigInt!
-  lastUpdatedTimestamp: Int! # uint256
+  blockTimestamp: Int! # uint256
   gasConsumed: BigDecimal!
 
   # used for other stats like marketcap
@@ -31,9 +31,11 @@ type TokenDayData @entity {
   dailyVolumeToken: BigDecimal!
   dailyGasConsumed: BigDecimal!
   dailyTxns: BigInt!
+  blockTimestamp: Int! # uint256
 }
 
 type User @entity {
   id: ID!
   tokens: [Token!]!
+  blockTimestamp: Int! # uint256
 }
