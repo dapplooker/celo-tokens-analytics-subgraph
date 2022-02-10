@@ -4,14 +4,13 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ dapplooker/celo-tokens-analytics-subgraph",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ dapplooker/celo-tokens-analytics-subgraph --access-token e13b2bb327374972b33895b204047fc1",
     "create-local": "graph create --node http://localhost:8020/ dapplooker/celo-tokens-analytics-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ dapplooker/celo-tokens-analytics-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 dapplooker/celo-tokens-analytics-subgraph"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "git+ssh://git@github.com/dapplooker/graph-cli-dlooker.git",
-    "@graphprotocol/graph-ts": "0.18.1"
+    "@graphprotocol/graph-cli": "git+ssh://git@github.com/dapplooker/graph-cli-dlooker.git#develop",
+    "@graphprotocol/graph-ts": "0.24.1"
   }
 }
-

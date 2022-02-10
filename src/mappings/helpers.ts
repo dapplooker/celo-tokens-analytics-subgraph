@@ -21,6 +21,10 @@ export let ZERO_BD = BigDecimal.fromString("0");
 export let ONE_BD = BigDecimal.fromString("1");
 export let BI_18 = BigInt.fromI32(18);
 
+let tokenDetails = new Map<string, string>()
+let tokenDetailsNumber = new Map<string, BigInt>()
+// tokenDetails = {}
+
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   let bd = BigDecimal.fromString("1");
   for (let i = ZERO_BI; i.lt(decimals as BigInt); i = i.plus(ONE_BI)) {
@@ -64,6 +68,12 @@ export function isNullEthValue(value: string): boolean {
 }
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
+  let token_key = tokenAddress.toHexString().concat("symbolValue").toString();
+
+  if (tokenDetails.has(token_key)) {
+      return tokenDetails.get(token_key)
+  }
+
   // hard coded overrides
   if (tokenAddress.toHexString() == CELO_ADDRESS) {
     return "CELO";
@@ -87,10 +97,18 @@ export function fetchTokenSymbol(tokenAddress: Address): string {
     symbolValue = symbolResult.value;
   }
 
+  tokenDetails.set(token_key, symbolValue)
+
   return symbolValue;
 }
 
 export function fetchTokenName(tokenAddress: Address): string {
+  let token_key = tokenAddress.toHexString().concat("nameValue").toString();
+
+  if (tokenDetails.has(token_key)) {
+    return tokenDetails.get(token_key)
+  }
+
   // hard coded overrides
   if (tokenAddress.toHexString() == CELO_ADDRESS) {
     return "Celo Native Asset";
@@ -113,35 +131,49 @@ export function fetchTokenName(tokenAddress: Address): string {
   } else {
     nameValue = nameResult.value;
   }
-
+  tokenDetails.set(token_key, nameValue)
   return nameValue;
 }
 
 export function fetchTokenTotalSupply(tokenAddress: Address): BigInt {
+  let token_key = tokenAddress.toHexString().concat("totalSupplyResult").toString();
+
+  if (tokenDetailsNumber.has(token_key)) {
+    return tokenDetailsNumber.get(token_key)
+  }
+
   let contract = ERC20.bind(tokenAddress);
-  let totalSupplyValue = null;
+  // let totalSupplyValue = NaN;
   let totalSupplyResult = contract.totalSupply();
   // log.warning("total supply for address {} {}",[tokenAddress.toHexString(), totalSupplyResult.toString()]);
   // if (!totalSupplyResult.reverted) {
   //   totalSupplyValue = totalSupplyResult as i32;
   // }
   // return BigInt.fromI32(totalSupplyValue as i32);
+  tokenDetailsNumber.set(token_key, totalSupplyResult)
   return totalSupplyResult;
 }
 
 export function fetchTokenDecimals(tokenAddress: Address): BigInt {
+  let token_key = tokenAddress.toHexString().concat("decimalValue").toString();
+
+  if (tokenDetailsNumber.has(token_key)) {
+    return tokenDetailsNumber.get(token_key)
+  }
 
   let contract = ERC20.bind(tokenAddress);
   // try types uint8 for decimals
-  let decimalValue = null;
+  let decimalValue = 0;
   let decimalResult = contract.try_decimals();
   if (!decimalResult.reverted) {
     decimalValue = decimalResult.value;
   }
-  return BigInt.fromI32(decimalValue as i32);
+  tokenDetailsNumber.set(token_key, BigInt.fromI32(decimalValue))
+
+  return BigInt.fromI32(decimalValue);
 }
 
-export function createUser(address: Address, token: string): void {
+export function createUser(address: Address, token: string, blockTimestamp: BigInt): void {
   let user = User.load(address.toHexString());
   if (!user) {
     user = new User(address.toHexString());
@@ -153,6 +185,7 @@ export function createUser(address: Address, token: string): void {
       user.tokens.push(token);
     }
     user.tokens = user.tokens;
+    user.blockTimestamp = blockTimestamp;
     user.save();
   }
 }
