@@ -1,28 +1,17 @@
 /* eslint-disable prefer-const */
-import {
-    Address,
-    BigDecimal,
-    BigInt, log,
-} from "@graphprotocol/graph-ts";
-import { ERC20 } from "../../generated/MooToken/ERC20";
-import { ERC20NameBytes } from "../../generated/MooToken/ERC20NameBytes";
-import { ERC20SymbolBytes } from "../../generated/MooToken/ERC20SymbolBytes";
-import {
-    User,
-} from "../../generated/schema";
+import {Address, BigDecimal, BigInt,} from "@graphprotocol/graph-ts";
+import {ERC20} from "../../generated/MooToken/ERC20";
+import {ERC20NameBytes} from "../../generated/MooToken/ERC20NameBytes";
+import {ERC20SymbolBytes} from "../../generated/MooToken/ERC20SymbolBytes";
+import {User,} from "../../generated/schema";
 
 export const CELO_ADDRESS = "0x471EcE3750Da237f93B8E339c536989b8978a438";
-
-export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 export let ZERO_BI = BigInt.fromI32(0);
 export let ONE_BI = BigInt.fromI32(1);
 export let ZERO_BD = BigDecimal.fromString("0");
-export let ONE_BD = BigDecimal.fromString("1");
 export let BI_18 = BigInt.fromI32(18);
 
-let tokenDetails = new Map<string, string>()
-let tokenDetailsNumber = new Map<string, BigInt>()
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
     let bd = BigDecimal.fromString("1");
@@ -32,12 +21,8 @@ export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
     return bd;
 }
 
-export function bigDecimalExp18(): BigDecimal {
-    return BigDecimal.fromString("1000000000000000000");
-}
-
 export function convertEthToDecimal(eth: BigInt): BigDecimal {
-    return eth.toBigDecimal().div(exponentToBigDecimal(18));
+    return eth.toBigDecimal().div(exponentToBigDecimal(BI_18));
 }
 
 export function convertTokenToDecimal(
@@ -67,14 +52,6 @@ export function isNullEthValue(value: string): boolean {
 }
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
-    let token_key = tokenAddress.toHexString().concat("symbolValue").toString();
-
-    if (tokenDetails.has(token_key)) {
-        log.info("Symbol for token address {} already present.", [token_key])
-        return tokenDetails.get(token_key)
-    }
-
-    // hard coded overrides
     if (tokenAddress.toHexString() == CELO_ADDRESS) {
         return "CELO";
     }
@@ -82,13 +59,11 @@ export function fetchTokenSymbol(tokenAddress: Address): string {
     let contract = ERC20.bind(tokenAddress);
     let contractSymbolBytes = ERC20SymbolBytes.bind(tokenAddress);
 
-    // try types string and bytes32 for symbol
     let symbolValue = "unknown";
     let symbolResult = contract.try_symbol();
     if (symbolResult.reverted) {
         let symbolResultBytes = contractSymbolBytes.try_symbol();
         if (!symbolResultBytes.reverted) {
-            // for broken pairs that have no symbol function exposed
             if (!isNullEthValue(symbolResultBytes.value.toHexString())) {
                 symbolValue = symbolResultBytes.value.toString();
             }
@@ -97,34 +72,21 @@ export function fetchTokenSymbol(tokenAddress: Address): string {
         symbolValue = symbolResult.value;
     }
 
-    tokenDetails.set(token_key, symbolValue)
-
     return symbolValue;
 }
 
 export function fetchTokenName(tokenAddress: Address): string {
-    let token_key = tokenAddress.toHexString().concat("nameValue").toString();
-
-    if (tokenDetails.has(token_key)) {
-        log.info("Token name for token address {} already present.", [token_key])
-        return tokenDetails.get(token_key)
-    }
-
-    // hard coded overrides
     if (tokenAddress.toHexString() == CELO_ADDRESS) {
         return "Celo Native Asset";
     }
 
+    let nameValue = "unknown";
     let contract = ERC20.bind(tokenAddress);
     let contractNameBytes = ERC20NameBytes.bind(tokenAddress);
-
-    // try types string and bytes32 for name
-    let nameValue = "unknown";
     let nameResult = contract.try_name();
     if (nameResult.reverted) {
         let nameResultBytes = contractNameBytes.try_name();
         if (!nameResultBytes.reverted) {
-            // for broken exchanges that have no name function exposed
             if (!isNullEthValue(nameResultBytes.value.toHexString())) {
                 nameValue = nameResultBytes.value.toString();
             }
@@ -132,63 +94,35 @@ export function fetchTokenName(tokenAddress: Address): string {
     } else {
         nameValue = nameResult.value;
     }
-    tokenDetails.set(token_key, nameValue)
+
     return nameValue;
 }
 
 export function fetchTokenTotalSupply(tokenAddress: Address): BigInt {
-    let token_key = tokenAddress.toHexString().concat("totalSupplyResult").toString();
-
-    if (tokenDetailsNumber.has(token_key)) {
-        log.info("Total supply for token address {} already present.", [token_key])
-        return tokenDetailsNumber.get(token_key)
-    }
-
     let contract = ERC20.bind(tokenAddress);
-    // let totalSupplyValue = NaN;
-    let totalSupplyResult = contract.totalSupply();
-    // log.warning("total supply for address {} {}",[tokenAddress.toHexString(), totalSupplyResult.toString()]);
-    // if (!totalSupplyResult.reverted) {
-    //   totalSupplyValue = totalSupplyResult as i32;
-    // }
-    // return BigInt.fromI32(totalSupplyValue as i32);
-    tokenDetailsNumber.set(token_key, totalSupplyResult)
-    return totalSupplyResult;
+    return contract.totalSupply();
 }
 
 export function fetchTokenDecimals(tokenAddress: Address): BigInt {
-    let token_key = tokenAddress.toHexString().concat("decimalValue").toString();
-
-    if (tokenDetailsNumber.has(token_key)) {
-        log.info("Decimals for token address {} already present.", [token_key])
-        return tokenDetailsNumber.get(token_key)
-    }
-
     let contract = ERC20.bind(tokenAddress);
-    // try types uint8 for decimals
     let decimalValue = 0;
     let decimalResult = contract.try_decimals();
     if (!decimalResult.reverted) {
         decimalValue = decimalResult.value;
     }
-    tokenDetailsNumber.set(token_key, BigInt.fromI32(decimalValue))
 
     return BigInt.fromI32(decimalValue);
 }
 
 export function createUser(address: Address, token: string, blockTimestamp: BigInt): void {
-    let user = User.load(address.toHexString());
+    let userIdentifier = address.toHexString().concat("-").concat(token)
+    let user = User.load(userIdentifier);
     if (!user) {
         user = new User(address.toHexString());
-        user.tokens = [ token ];
-        user.save();
-    } else {
-        let isToken = user.tokens.includes(token);
-        if (!isToken) {
-            user.tokens.push(token);
-        }
-        user.tokens = user.tokens;
-        user.blockTimestamp = blockTimestamp;
-        user.save();
+        user.user = address
+        user.token = token;
     }
+
+    user.blockTimestamp = blockTimestamp;
+    user.save();
 }

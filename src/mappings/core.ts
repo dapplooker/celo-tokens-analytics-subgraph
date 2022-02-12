@@ -34,7 +34,7 @@ export function handleTransfer(event: ethereum.Event): void {
         token.symbol = fetchTokenSymbol(tokenAddress);
         token.name = fetchTokenName(tokenAddress);
         token.totalSupply = fetchTokenTotalSupply(tokenAddress);
-        token.decimals = fetchTokenDecimals(tokenAddress);;
+        token.decimals = fetchTokenDecimals(tokenAddress);
         token.totalVolume = ZERO_BD;
         token.txCount = ZERO_BI;
         token.gasConsumed = ZERO_BD;
@@ -47,7 +47,6 @@ export function handleTransfer(event: ethereum.Event): void {
     log.info("Proceeding with other set of steps for block {}", [event.block.number.toString()]);
 
     token.txCount = token.txCount.plus(ONE_BI);
-    token.totalSupply = fetchTokenTotalSupply(tokenAddress);
     token.totalVolume = token.totalVolume.plus(event.parameters[2].value.toBigInt().toBigDecimal());
     let gasConsumed = event.transaction.gasLimit.times(event.transaction.gasPrice).toBigDecimal();
     token.gasConsumed = token.gasConsumed.plus(gasConsumed);
