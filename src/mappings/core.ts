@@ -44,17 +44,18 @@ export function handleTransfer(event: ethereum.Event): void {
         log.warning("Token with address {} already present",[event.address.toHexString()]);
     }
 
-    log.info("Proceeding with other set of steps for block {}", [event.block.number.toString()]);
-
+    log.info("Updating token information for token address {}", [token.id]);
     token.txCount = token.txCount.plus(ONE_BI);
     token.totalVolume = token.totalVolume.plus(event.parameters[2].value.toBigInt().toBigDecimal());
     let gasConsumed = event.transaction.gasLimit.times(event.transaction.gasPrice).toBigDecimal();
     token.gasConsumed = token.gasConsumed.plus(gasConsumed);
     token.blockTimestamp = event.block.timestamp;
 
-    createUser(event.parameters[0].value.toAddress(), event.address.toHexString(), event.block.timestamp);
-    createUser(event.parameters[1].value.toAddress(), event.address.toHexString(), event.block.timestamp);
+    log.info("Creating user for token address {}", [token.id]);
+    createUser(event.parameters[0].value.toAddress(), token.id, token.blockTimestamp);
+    createUser(event.parameters[1].value.toAddress(), token.id, token.blockTimestamp);
 
+    log.info("Updating day data for token address {}", [token.id]);
     let tokenDayData = updateTokenDayData(token as Token, event);
     tokenDayData.dailyVolumeToken = tokenDayData.dailyVolumeToken.plus(event.parameters[2].value.toBigInt().toBigDecimal());
     tokenDayData.dailyGasConsumed = tokenDayData.dailyGasConsumed.plus(gasConsumed);
