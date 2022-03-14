@@ -10,8 +10,7 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 dapplooker/celo-tokens-analytics-subgraph"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "git+ssh://git@github.com/dapplooker/graph-cli-dlooker.git",
-    "@graphprotocol/graph-ts": "0.18.1"
+    "@graphprotocol/graph-cli": "git+ssh://git@github.com/dapplooker/graph-cli-dlooker.git#develop",
+    "@graphprotocol/graph-ts": "0.24.1"
   }
 }
-
