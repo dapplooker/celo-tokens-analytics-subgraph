@@ -123,6 +123,6 @@ export function createUser(address: Address, token: string, blockTimestamp: BigI
         user.token = token;
     }
 
-    user.blockTimestamp = blockTimestamp;
+    user.lastUpdatedTimestamp = blockTimestamp;
     user.save();
 }

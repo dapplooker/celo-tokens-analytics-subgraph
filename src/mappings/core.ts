@@ -38,7 +38,7 @@ export function handleTransfer(event: ethereum.Event): void {
         token.totalVolume = ZERO_BD;
         token.txCount = ZERO_BI;
         token.gasConsumed = ZERO_BD;
-        token.blockTimestamp = event.block.timestamp;
+        token.lastUpdatedTimestamp = event.block.timestamp;
         token.save();
     } else {
         log.warning("Token with address {} already present",[event.address.toHexString()]);
@@ -49,11 +49,11 @@ export function handleTransfer(event: ethereum.Event): void {
     token.totalVolume = token.totalVolume.plus(event.parameters[2].value.toBigInt().toBigDecimal());
     let gasConsumed = event.transaction.gasLimit.times(event.transaction.gasPrice).toBigDecimal();
     token.gasConsumed = token.gasConsumed.plus(gasConsumed);
-    token.blockTimestamp = event.block.timestamp;
+    token.lastUpdatedTimestamp = event.block.timestamp;
 
     log.info("Creating user for token address {}", [token.id]);
-    createUser(event.parameters[0].value.toAddress(), token.id, token.blockTimestamp);
-    createUser(event.parameters[1].value.toAddress(), token.id, token.blockTimestamp);
+    createUser(event.parameters[0].value.toAddress(), token.id, token.lastUpdatedTimestamp);
+    createUser(event.parameters[1].value.toAddress(), token.id, token.lastUpdatedTimestamp);
 
     log.info("Updating day data for token address {}", [token.id]);
     let tokenDayData = updateTokenDayData(token as Token, event);
