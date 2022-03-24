@@ -1,9 +1,9 @@
 /* eslint-disable prefer-const */
 import {Address, BigDecimal, BigInt,} from "@graphprotocol/graph-ts";
-import {ERC20} from "../../generated/MooToken/ERC20";
-import {ERC20NameBytes} from "../../generated/MooToken/ERC20NameBytes";
-import {ERC20SymbolBytes} from "../../generated/MooToken/ERC20SymbolBytes";
 import {User,} from "../../generated/schema";
+import {ERC20} from "../../generated/cEUR/ERC20";
+import {ERC20SymbolBytes} from "../../generated/cEUR/ERC20SymbolBytes";
+import {ERC20NameBytes} from "../../generated/cEUR/ERC20NameBytes";
 
 export const CELO_ADDRESS = "0x471EcE3750Da237f93B8E339c536989b8978a438";
 
@@ -34,16 +34,6 @@ export function convertTokenToDecimal(
     }
     return tokenAmount.toBigDecimal().div(exponentToBigDecimal(exchangeDecimals));
 }
-
-export function equalToZero(value: BigDecimal): boolean {
-    const formattedVal = parseFloat(value.toString());
-    const zero = parseFloat(ZERO_BD.toString());
-    if (zero == formattedVal) {
-        return true;
-    }
-    return false;
-}
-
 export function isNullEthValue(value: string): boolean {
     return (
         value ==
@@ -126,3 +116,4 @@ export function createUser(address: Address, token: string, blockTimestamp: BigI
     user.lastUpdatedTimestamp = blockTimestamp;
     user.save();
 }
+
