@@ -20,7 +20,7 @@ export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDa
     let tokenDayData = TokenDayData.load(tokenDayID);
     if (tokenDayData === null) {
         tokenDayData = new TokenDayData(tokenDayID);
-        tokenDayData.timestamp = dayStartTimestamp;
+        tokenDayData.dayTimestamp = dayStartTimestamp;
         tokenDayData.token = token.id;
         tokenDayData.dailyVolumeToken = ZERO_BD;
         tokenDayData.dailyGasConsumed = ZERO_BD;
